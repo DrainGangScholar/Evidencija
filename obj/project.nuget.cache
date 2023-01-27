@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "mC1N3Z0ZWeQ3KQruar/cDunpf1kAKQpn4D3puCfDZIL8K/y8JA+cFspWQssIBvrnDVwMf3gBh6GhmIEOoyHyyA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\snow soldier\\Desktop\\Evidencija\\Evidencija.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\snow soldier\\.nuget\\packages\\microsoft.aspnetcore.openapi\\7.0.1\\microsoft.aspnetcore.openapi.7.0.1.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\microsoft.extensions.apidescription.server\\6.0.5\\microsoft.extensions.apidescription.server.6.0.5.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\microsoft.openapi\\1.4.3\\microsoft.openapi.1.4.3.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\swashbuckle.aspnetcore\\6.4.0\\swashbuckle.aspnetcore.6.4.0.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\swashbuckle.aspnetcore.swagger\\6.4.0\\swashbuckle.aspnetcore.swagger.6.4.0.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\swashbuckle.aspnetcore.swaggergen\\6.4.0\\swashbuckle.aspnetcore.swaggergen.6.4.0.nupkg.sha512",
+    "C:\\Users\\snow soldier\\.nuget\\packages\\swashbuckle.aspnetcore.swaggerui\\6.4.0\\swashbuckle.aspnetcore.swaggerui.6.4.0.nupkg.sha512"
+  ],
+  "logs": []
+}
