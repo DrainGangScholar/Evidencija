@@ -1,5 +1,10 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.EntityFrameworkCore;
+using Models;
 
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<EvidencijaContext>(option=>{
+    option.UseSqlServer(builder.Configuration.GetConnectionString("CS"));
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
