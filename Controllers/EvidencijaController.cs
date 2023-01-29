@@ -4,36 +4,29 @@ using Models;
 using ClosedXML.Excel;
 using Newtonsoft.Json;
 using System.Text.Json;
-using System.Text.Json.Nodes;
+
 
 namespace Evidencija.Controllers{
     [ApiController]
     [Route("[controller]")]
     public class EvidencijaController : ControllerBase{
             [NonAction]
-            public void Obracun(int BrutoPlata, ref double PIO, ref double Osiguranje, ref double Doprinosi, ref double Porez, ref double NetoPlata,int val ){
+            public void Obracun(ref double BrutoPlata, ref double PIO, ref double Osiguranje, ref double Doprinosi, ref double Porez, ref double NetoPlata,int val ){
            
-                if(val!=0){
                 var client = new HttpClient();
                 var response = client.GetAsync("https://v6.exchangerate-api.com/v6/94a988704774a72fd90feb65/latest/RSD").Result;
                     if(response.IsSuccessStatusCode){
                         string content = response.Content.ReadAsStringAsync().Result;
-                        var json = JsonConvert.DeserializeObject<JsonDocument>(content)!;
-                        double value;
-                        if(val==1){
-                            value = json.RootElement.GetProperty("conversion_rates")
-                                                    .GetProperty("USD")
-                                                    .GetDouble();
+                        var json = JsonConvert.DeserializeObject<dynamic>(content)!;
+                        double value=1;
+                        if (val == 1)
+                        {
+                            value = (json["conversion_rates"]["USD"]).ToObject<double>();
                         }
-                        // else{
-                        //     value = json.GetProperty("conversion_rates")
-                        //                 .GetProperty("EUR")
-                        //                 .GetDouble();
-                        //     }
-                    }
-                    else{
-                        return;
-                    }
+                        else{
+                            value = json["conversion_rates"]["EUR"].ToObject<double>();
+                        }
+                    BrutoPlata=BrutoPlata*value;
                     PIO=0.24*BrutoPlata;
                     Osiguranje=0.0515*BrutoPlata;
                     Doprinosi=0.0075*BrutoPlata;
@@ -83,19 +76,33 @@ namespace Evidencija.Controllers{
                         var radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
                         if(radnik==null)
                             return BadRequest("Radnik sa trazenim id-jem ne postoji!");
+                        double bP=radnik.BrutoPlata;
                         double PIO=0;
                         double Osiguranje=0;
                         double Doprinosi=0;
                         double Porez=0;
                         double NetoPlata=0;
-                        Obracun(radnik.BrutoPlata, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
+                        string Valuta="RSD";
+                        if(val==1)
+                            Valuta="USD";
+                        else if(val==2)
+                            Valuta="EUR";
+                        Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
+                        int BP=(int) bP;
+                        Radnik _radnik=new Radnik{
+                            Ime=radnik.Ime,
+                            Prezime=radnik.Prezime,
+                            Pozicija=radnik.Pozicija,
+                            BrutoPlata=BP
+                        };
                         return Ok(new {
-                            Radnik=radnik,
+                            Radnik=_radnik,
                             pio=PIO,
                             osiguranje=Osiguranje,
                             doprinosi=Doprinosi,
                             porez=Porez,
-                            netoPlata=NetoPlata
+                            netoPlata=NetoPlata,
+                            valuta=Valuta
                         });
                     }
                     catch(Exception e){

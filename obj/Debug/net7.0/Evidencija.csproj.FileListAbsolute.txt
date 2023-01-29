@@ -82,3 +82,4 @@ C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\Irony.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\SixLabors.Fonts.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\System.IO.Packaging.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\XLParser.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\Newtonsoft.Json.dll
