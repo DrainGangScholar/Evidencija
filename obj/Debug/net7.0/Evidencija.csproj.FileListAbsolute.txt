@@ -94,5 +94,4 @@ C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.sign.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.styledxmlparser.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.svg.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.commons.dll
-C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itextsharp.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\Microsoft.DotNet.PlatformAbstractions.dll

@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using Models;
 using ClosedXML.Excel;
 using Newtonsoft.Json;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
 using System.Net;
 using System.Net.Mail;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using System.Net.Mime;
 
 namespace Evidencija.Controllers{
     [ApiController]
@@ -167,16 +169,16 @@ namespace Evidencija.Controllers{
                     return BadRequest(e.Message);
                 }
             }
+                
             [HttpGet]
-            [Route("PdfEmail")]
-            public async Task<ActionResult> PdfEmail(int id,int val,int email){
+            [Route("PdfDownload")]
+            public async Task<ActionResult> PdfDownload(int id,int val){
                 try{
-                    var document = new Document();
-                    using(var output = new MemoryStream()){
-                        var writer = PdfWriter.GetInstance(document, output);
-                        var radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
-                        if(radnik==null)
-                            return BadRequest("Radnik sa trazenim id-jem ne postoji!");
+                    using(var stream=new MemoryStream()){
+                        var writer=new PdfWriter(stream);
+                        var pdf = new PdfDocument(writer);
+                        var document = new Document(pdf);
+                        Radnik radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
                         double bP=radnik.BrutoPlata;
                         double PIO=0;
                         double Osiguranje=0;
@@ -184,37 +186,98 @@ namespace Evidencija.Controllers{
                         double Porez=0;
                         double NetoPlata=0;
                         string Valuta="RSD";
-                        if(val==1)
-                            Valuta="USD";
-                        else if(val==2)
-                            Valuta="EUR";
-                        Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
+                            if(val==1)
+                                Valuta="USD";
+                            else if(val==2)
+                                Valuta="EUR";
+                            Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
                         int BP=(int) bP;
-                        document.Open();
                         document.Add(new Paragraph("Ime,Prezime,Pozicija,BrutoPlata,PIO,Osiguranje,Doprinosi,Porez,NetoPlata,Valuta"));
                         document.Add(new Paragraph($"{radnik.Ime},{radnik.Prezime},{radnik.Pozicija},{BP},{PIO},{Osiguranje},{Doprinosi},{Porez},{NetoPlata},{Valuta}"));
                         document.Close();
-                            if(email!=0){
-                                    using(MailMessage mail=new MailMessage()){
-                                    mail.From=new MailAddress("seljavelja13@gmail.com");
-                                    mail.To.Add("veljkomarkovic77@gmail.com");
-                                    mail.Subject="HEllo";
-                                    mail.Body="WORLD";
-                                    mail.Attachments.Add(new Attachment(output,$"{radnik.Ime}_{radnik.Prezime}"));
-                                    using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
-                                    smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
-                                    smtp.EnableSsl=true;
-                                    smtp.Send(mail);
-                                    }
-                                }
-                            }
-                        return File(output.ToArray(), "application/pdf", $"{radnik.Ime} {radnik.Prezime}.pdf");
-                        } 
-                    }
-                    catch(Exception e){
+                        return File(stream.ToArray(),"application/pdf","over.pdf");
+                   }
+                }   
+                catch(Exception e){
                     return BadRequest(e.Message);
-                    } 
                 }
-               
             }
-        }
+            [HttpPost]
+            [Route("Email")]
+            public async Task<ActionResult> Email(int id, int val){
+                try{
+                    using(var stream=new MemoryStream()){
+                        var writer=new PdfWriter(stream);
+                        var pdf = new PdfDocument(writer);
+                        var document = new Document(pdf);
+                        Radnik radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
+                        double bP=radnik.BrutoPlata;
+                        double PIO=0;
+                        double Osiguranje=0;
+                        double Doprinosi=0;
+                        double Porez=0;
+                        double NetoPlata=0;
+                        string Valuta="RSD";
+                            if(val==1)
+                                Valuta="USD";
+                            else if(val==2)
+                                Valuta="EUR";
+                            Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
+                        int BP=(int) bP;
+                        document.Add(new Paragraph("Ime,Prezime,Pozicija,BrutoPlata,PIO,Osiguranje,Doprinosi,Porez,NetoPlata,Valuta"));
+                        document.Add(new Paragraph($"{radnik.Ime},{radnik.Prezime},{radnik.Pozicija},{BP},{PIO},{Osiguranje},{Doprinosi},{Porez},{NetoPlata},{Valuta}"));
+                        document.Flush();
+                        writer.Flush();
+                        pdf.Close();
+                        using(MailMessage mail=new MailMessage()){
+                        mail.From=new MailAddress("seljavelja13@gmail.com");
+                        mail.To.Add("veljkolegendaa@gmail.com");
+                        mail.Subject="HEllo";
+                        mail.Body="WORLD";
+                        mail.Attachments.Add(new Attachment(new MemoryStream(stream.ToArray()),"molimte.pdf",MediaTypeNames.Application.Pdf));
+                            using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
+                                smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
+                                smtp.EnableSsl=true;
+                                smtp.Send(mail);
+                            }
+                        }
+                        return Ok();       
+                    }
+                }
+                catch(Exception e){
+                    return BadRequest(e.Message);
+                }
+            }
+            // [HttpGet]
+            // [Route("SendMail")]
+            // public async Task<ActionResult> SendMail(int id,int val){
+            //     try{
+            //         using(MailMessage mail=new MailMessage()){
+            //             mail.From=new MailAddress("seljavelja13@gmail.com");
+            //             mail.To.Add("veljkolegendaa@gmail.com");
+            //             mail.Subject="HEllo";
+            //             mail.Body="WORLD";
+            //             var radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
+            //             using(MemoryStream output=new MemoryStream(PDF(id,val,radnik))){
+            //                 using(var document=new Document()){
+            //                     using(var writer = PdfWriter.GetInstance(document, output)){
+            //                         mail.Attachments.Add(new Attachment(output,"molimte.pdf"));
+            //                         using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
+            //                             smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
+            //                             smtp.EnableSsl=true;
+            //                             smtp.Send(mail);
+            //                             return File(output.ToArray(),"application/pdf","troll.pdf");
+            //                         }
+            //                     }
+            //                 }       
+            //             }
+                        
+            //         }
+            //     }
+            //     catch(Exception e){
+            //         return BadRequest(e.Message);
+            //     }
+            // }
+
+    }
+}
