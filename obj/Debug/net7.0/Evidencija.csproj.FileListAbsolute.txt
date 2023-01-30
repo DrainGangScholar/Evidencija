@@ -83,3 +83,15 @@ C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\SixLabors.Fonts.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\System.IO.Packaging.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\XLParser.dll
 C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\Newtonsoft.Json.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\BouncyCastle.Crypto.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.barcodes.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.forms.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.io.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.kernel.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.layout.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.pdfa.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.sign.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.styledxmlparser.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.svg.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\itext.commons.dll
+C:\Users\snow soldier\Desktop\Evidencija\bin\Debug\net7.0\Microsoft.DotNet.PlatformAbstractions.dll

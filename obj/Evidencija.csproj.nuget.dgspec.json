@@ -40,6 +40,10 @@
         "net7.0": {
           "targetAlias": "net7.0",
           "dependencies": {
+            "BouncyCastle": {
+              "target": "Package",
+              "version": "[1.8.9, )"
+            },
             "ClosedXML": {
               "target": "Package",
               "version": "[0.100.3, )"
@@ -69,6 +73,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "itext7": {
+              "target": "Package",
+              "version": "[7.2.5, )"
             }
           },
           "imports": [
