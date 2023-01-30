@@ -43,6 +43,33 @@ namespace Evidencija.Controllers{
                     }
                 }
             }
+            [NonAction]
+            public MemoryStream PdfMemoryStream(int id,int val){
+                    var stream=new MemoryStream();
+                    var writer=new PdfWriter(stream);
+                    var pdf = new PdfDocument(writer);
+                    var document = new Document(pdf);
+                    Radnik radnik=Context.Radnici.Where(p=>p.ID==id).FirstOrDefault();
+                    double bP=radnik.BrutoPlata;
+                    double PIO=0;
+                    double Osiguranje=0;
+                    double Doprinosi=0;
+                    double Porez=0;
+                    double NetoPlata=0;
+                    string Valuta="RSD";
+                        if(val==1)
+                            Valuta="USD";
+                        else if(val==2)
+                            Valuta="EUR";
+                        Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
+                    int BP=(int) bP;
+                    document.Add(new Paragraph("Ime,Prezime,Pozicija,BrutoPlata,PIO,Osiguranje,Doprinosi,Porez,NetoPlata,Valuta"));
+                    document.Add(new Paragraph($"{radnik.Ime},{radnik.Prezime},{radnik.Pozicija},{BP},{PIO},{Osiguranje},{Doprinosi},{Porez},{NetoPlata},{Valuta}"));
+                    document.Flush();
+                    writer.Flush();
+                    pdf.Close();
+                    return stream;
+            }
 
             [HttpGet]
             [Route("GetRadnici")]
@@ -174,29 +201,8 @@ namespace Evidencija.Controllers{
             [Route("PdfDownload")]
             public async Task<ActionResult> PdfDownload(int id,int val){
                 try{
-                    using(var stream=new MemoryStream()){
-                        var writer=new PdfWriter(stream);
-                        var pdf = new PdfDocument(writer);
-                        var document = new Document(pdf);
-                        Radnik radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
-                        double bP=radnik.BrutoPlata;
-                        double PIO=0;
-                        double Osiguranje=0;
-                        double Doprinosi=0;
-                        double Porez=0;
-                        double NetoPlata=0;
-                        string Valuta="RSD";
-                            if(val==1)
-                                Valuta="USD";
-                            else if(val==2)
-                                Valuta="EUR";
-                            Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
-                        int BP=(int) bP;
-                        document.Add(new Paragraph("Ime,Prezime,Pozicija,BrutoPlata,PIO,Osiguranje,Doprinosi,Porez,NetoPlata,Valuta"));
-                        document.Add(new Paragraph($"{radnik.Ime},{radnik.Prezime},{radnik.Pozicija},{BP},{PIO},{Osiguranje},{Doprinosi},{Porez},{NetoPlata},{Valuta}"));
-                        document.Close();
-                        return File(stream.ToArray(),"application/pdf","over.pdf");
-                   }
+                    return File(PdfMemoryStream(id,val).ToArray(),"application/pdf","over.pdf");
+
                 }   
                 catch(Exception e){
                     return BadRequest(e.Message);
@@ -206,78 +212,23 @@ namespace Evidencija.Controllers{
             [Route("Email")]
             public async Task<ActionResult> Email(int id, int val){
                 try{
-                    using(var stream=new MemoryStream()){
-                        var writer=new PdfWriter(stream);
-                        var pdf = new PdfDocument(writer);
-                        var document = new Document(pdf);
-                        Radnik radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
-                        double bP=radnik.BrutoPlata;
-                        double PIO=0;
-                        double Osiguranje=0;
-                        double Doprinosi=0;
-                        double Porez=0;
-                        double NetoPlata=0;
-                        string Valuta="RSD";
-                            if(val==1)
-                                Valuta="USD";
-                            else if(val==2)
-                                Valuta="EUR";
-                            Obracun(ref bP, ref  PIO, ref  Osiguranje, ref  Doprinosi, ref  Porez, ref  NetoPlata,val);
-                        int BP=(int) bP;
-                        document.Add(new Paragraph("Ime,Prezime,Pozicija,BrutoPlata,PIO,Osiguranje,Doprinosi,Porez,NetoPlata,Valuta"));
-                        document.Add(new Paragraph($"{radnik.Ime},{radnik.Prezime},{radnik.Pozicija},{BP},{PIO},{Osiguranje},{Doprinosi},{Porez},{NetoPlata},{Valuta}"));
-                        document.Flush();
-                        writer.Flush();
-                        pdf.Close();
                         using(MailMessage mail=new MailMessage()){
                         mail.From=new MailAddress("seljavelja13@gmail.com");
-                        mail.To.Add("veljkolegendaa@gmail.com");
+                        mail.To.Add("veljkomarkovic77@gmail.com");
                         mail.Subject="HEllo";
                         mail.Body="WORLD";
-                        mail.Attachments.Add(new Attachment(new MemoryStream(stream.ToArray()),"molimte.pdf",MediaTypeNames.Application.Pdf));
+                        mail.Attachments.Add(new Attachment(new MemoryStream(PdfMemoryStream(id,val).ToArray()),"molimte.pdf",MediaTypeNames.Application.Pdf));
                             using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
                                 smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
                                 smtp.EnableSsl=true;
                                 smtp.Send(mail);
                             }
                         }
-                        return Ok();       
-                    }
+                    return Ok();       
                 }
                 catch(Exception e){
                     return BadRequest(e.Message);
                 }
             }
-            // [HttpGet]
-            // [Route("SendMail")]
-            // public async Task<ActionResult> SendMail(int id,int val){
-            //     try{
-            //         using(MailMessage mail=new MailMessage()){
-            //             mail.From=new MailAddress("seljavelja13@gmail.com");
-            //             mail.To.Add("veljkolegendaa@gmail.com");
-            //             mail.Subject="HEllo";
-            //             mail.Body="WORLD";
-            //             var radnik=await Context.Radnici.Where(p=>p.ID==id).FirstOrDefaultAsync();
-            //             using(MemoryStream output=new MemoryStream(PDF(id,val,radnik))){
-            //                 using(var document=new Document()){
-            //                     using(var writer = PdfWriter.GetInstance(document, output)){
-            //                         mail.Attachments.Add(new Attachment(output,"molimte.pdf"));
-            //                         using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
-            //                             smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
-            //                             smtp.EnableSsl=true;
-            //                             smtp.Send(mail);
-            //                             return File(output.ToArray(),"application/pdf","troll.pdf");
-            //                         }
-            //                     }
-            //                 }       
-            //             }
-                        
-            //         }
-            //     }
-            //     catch(Exception e){
-            //         return BadRequest(e.Message);
-            //     }
-            // }
-
     }
 }
