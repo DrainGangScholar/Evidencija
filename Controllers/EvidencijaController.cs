@@ -213,13 +213,13 @@ namespace Evidencija.Controllers{
             public async Task<ActionResult> Email(int id, int val){
                 try{
                         using(MailMessage mail=new MailMessage()){
-                        mail.From=new MailAddress("seljavelja13@gmail.com");
-                        mail.To.Add("veljkomarkovic77@gmail.com");
+                        mail.From=new MailAddress("");
+                        mail.To.Add("");
                         mail.Subject="HEllo";
                         mail.Body="WORLD";
                         mail.Attachments.Add(new Attachment(new MemoryStream(PdfMemoryStream(id,val).ToArray()),"molimte.pdf",MediaTypeNames.Application.Pdf));
                             using(SmtpClient smtp=new SmtpClient("smtp.gmail.com",587)){
-                                smtp.Credentials=new NetworkCredential("seljavelja13@gmail.com","bwemkitkcjqepzhh");
+                                smtp.Credentials=new NetworkCredential("@gmail.com","");
                                 smtp.EnableSsl=true;
                                 smtp.Send(mail);
                             }
